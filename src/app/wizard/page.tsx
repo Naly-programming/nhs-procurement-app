@@ -10,12 +10,8 @@ interface StepOneData {
   website: string
 }
 
-interface IntakeResponseRow {
+interface IntakeInsertResponse {
   id: number
-  user_id: string
-  step_data: StepOneData
-  submitted_at: string | null
-  created_at: string
 }
 
 export default function WizardStepOne() {
@@ -44,7 +40,7 @@ export default function WizardStepOne() {
         },
       ])
       .select()
-      .single<Pick<IntakeResponseRow, 'id'>>() // ✅ Just return ID
+      .single<IntakeInsertResponse>()
 
     if (error || !data) {
       console.error('Insert error:', error)
