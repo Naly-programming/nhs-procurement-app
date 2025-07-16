@@ -7,20 +7,27 @@ import { Session, User } from '@supabase/supabase-js'
 interface UserContextType {
   user: User | null
   session: Session | null
+  loading: boolean
 }
 
-const UserContext = createContext<UserContextType>({ user: null, session: null })
+const UserContext = createContext<UserContextType>({
+  user: null,
+  session: null,
+  loading: true,
+})
 
 export const useUser = () => useContext(UserContext)
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setUser(session?.user ?? null)
+      setLoading(false)
     })
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -34,7 +41,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <UserContext.Provider value={{ user, session }}>
+    <UserContext.Provider value={{ user, session, loading }}>
       {children}
     </UserContext.Provider>
   )
