@@ -3,16 +3,18 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
+import { User } from '@supabase/supabase-js'
 
 export default function Dashboard() {
   const router = useRouter()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
     const getUser = async () => {
       const {
         data: { user },
       } = await supabase.auth.getUser()
+
       if (!user) router.push('/login')
       else setUser(user)
     }
@@ -28,7 +30,7 @@ export default function Dashboard() {
         </p>
       )}
       <div className="bg-white p-6 rounded-lg shadow border space-y-4">
-        <p className="text-gray-700">You're just a few steps away from being NHS procurement-ready.</p>
+        <p className="text-gray-700">You&apos;re just a few steps away from being NHS procurement-ready.</p>
         <a
           href="/wizard"
           className="inline-block bg-teal-600 text-white px-6 py-2 rounded hover:bg-teal-700"

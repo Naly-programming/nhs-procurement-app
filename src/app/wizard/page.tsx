@@ -5,44 +5,46 @@ import { useUser } from '@/lib/UserContext'
 import { useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 
+interface StepOneData {
+  company_name: string
+  website: string
+}
+
 export default function WizardStepOne() {
   const { user } = useUser()
   const router = useRouter()
-  const [companyName, setCompanyName] = useState('')
-  const [website, setWebsite] = useState('')
+  const [companyName, setCompanyName] = useState<string>('')
+  const [website, setWebsite] = useState<string>('')
 
   const handleNext = async () => {
-    try {
-          console.log('Full user object:', user)
-    console.log('Current user ID:', user?.id)
-    const session = await supabase.auth.getSession()
-console.log('Supabase session:', session)
-      const { data, error } = await supabase
-        .from('intake_responses')
-        .insert([
-          {
-            user_id: user?.id,
-            step_data: {
-              company_name: companyName,
-              website,
-            },
-          },
-        ])
-        .select()
-        .single()
-
-      if (error || !data) {
-        console.error('Insert error:', error)
-        alert('Error starting wizard')
-        return
-      }
-
-      const intakeId = data.id
-      router.push(`/wizard/step-2?intake_id=${intakeId}`)
-    } catch (err) {
-      console.error('Unexpected error:', err)
-      alert('Unexpected error starting wizard')
+    if (!user?.id) {
+      alert('User not authenticated')
+      return
     }
+
+    const stepData: StepOneData = {
+      company_name: companyName,
+      website,
+    }
+
+    const { data, error } = await supabase
+      .from('intake_responses')
+      .insert([
+        {
+          user_id: user.id,
+          step_data: stepData,
+        },
+      ])
+      .select()
+      .single()
+
+    if (error || !data) {
+      console.error('Insert error:', error)
+      alert('Error starting wizard')
+      return
+    }
+
+    router.push(`/wizard/step-2?intake_id=${data.id}`)
   }
 
   return (

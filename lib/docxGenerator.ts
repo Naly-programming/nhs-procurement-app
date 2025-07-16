@@ -1,37 +1,39 @@
 import { Document, Packer, Paragraph, TextRun } from 'docx'
 
-type IntakeStepData = {
+interface StepData {
   company_name?: string
   website?: string
   product_desc?: string
   used_in_nhs?: boolean
 }
 
-export const generateDocxBuffer = async (data: IntakeStepData): Promise<Blob> => {
+export async function generateDocxBuffer(stepData: StepData): Promise<Blob> {
   const doc = new Document({
     sections: [
       {
+        properties: {},
         children: [
           new Paragraph({
             children: [
               new TextRun({
                 text: 'NHS Procurement Readiness Report',
                 bold: true,
-                size: 28,
+                size: 32,
               }),
             ],
           }),
-          new Paragraph(''),
-          new Paragraph(`Company Name: ${data.company_name || '—'}`),
-          new Paragraph(`Website: ${data.website || '—'}`),
-          new Paragraph(`Product Description:`),
-          new Paragraph(data.product_desc || '—'),
-          new Paragraph(`Used in NHS Before: ${data.used_in_nhs ? 'Yes' : 'No'}`),
+          new Paragraph({ text: '' }),
+          new Paragraph({ text: `Company Name: ${stepData.company_name || '—'}` }),
+          new Paragraph({ text: `Website: ${stepData.website || '—'}` }),
+          new Paragraph({ text: `Product Description: ${stepData.product_desc || '—'}` }),
+          new Paragraph({
+            text: `Used in NHS Before: ${stepData.used_in_nhs ? 'Yes' : 'No'}`,
+          }),
         ],
       },
     ],
   })
 
-  const blob = await Packer.toBlob(doc)
-  return blob
+  const buffer = await Packer.toBlob(doc)
+  return buffer
 }

@@ -4,24 +4,36 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 
+interface StepData {
+  company_name?: string
+  website?: string
+  product_desc?: string
+  used_in_nhs?: boolean
+}
+
 export default function WizardStepThree() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const intakeId = searchParams.get('intake_id')
 
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<StepData | null>(null)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data } = await supabase
+      const { data: result, error } = await supabase
         .from('intake_responses')
         .select('step_data')
         .eq('id', intakeId)
         .single()
 
-      setData(data?.step_data || {})
+      if (error) {
+        console.error('Error fetching step data:', error)
+        setData({})
+      } else {
+        setData(result?.step_data || {})
+      }
       setLoading(false)
     }
 
@@ -43,7 +55,7 @@ export default function WizardStepThree() {
     router.push(`/wizard/step-2?intake_id=${intakeId}`)
   }
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>
+  if (loading || !data) return <p className="text-center mt-10">Loading...</p>
 
   return (
     <section className="max-w-xl mx-auto px-4 py-12">

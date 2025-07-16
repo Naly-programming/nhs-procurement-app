@@ -64,7 +64,7 @@ export default function ContactPage() {
         </form>
       ) : (
         <div className="bg-green-50 border border-green-300 text-green-700 px-4 py-3 rounded mb-12">
-          Thanks for getting in touch! We'll respond soon.
+          Thanks for getting in touch! We&apos;ll respond soon.
         </div>
       )}
 
