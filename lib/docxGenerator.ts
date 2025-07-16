@@ -1,34 +1,52 @@
-import { Document, Packer, Paragraph, TextRun } from 'docx'
+import { Packer, Document, Paragraph, TextRun } from 'docx'
 
 interface StepData {
   company_name?: string
   website?: string
   product_desc?: string
   used_in_nhs?: boolean
+  has_data_policy?: boolean
+  has_ico_registration?: boolean
+  is_dsp_toolkit_compliant?: boolean
 }
 
-export async function generateDocxBuffer(stepData: StepData): Promise<Blob> {
+export async function generateDocxBuffer(data: StepData): Promise<Blob> {
   const doc = new Document({
     sections: [
       {
-        properties: {},
         children: [
           new Paragraph({
             children: [
               new TextRun({
                 text: 'NHS Procurement Readiness Report',
                 bold: true,
-                size: 32,
+                size: 28,
               }),
             ],
           }),
+
           new Paragraph({ text: '' }),
-          new Paragraph({ text: `Company Name: ${stepData.company_name || '—'}` }),
-          new Paragraph({ text: `Website: ${stepData.website || '—'}` }),
-          new Paragraph({ text: `Product Description: ${stepData.product_desc || '—'}` }),
+
           new Paragraph({
-            text: `Used in NHS Before: ${stepData.used_in_nhs ? 'Yes' : 'No'}`,
+            children: [new TextRun({ text: 'Basic Company Info', bold: true })],
           }),
+          new Paragraph({ text: `Company Name: ${data.company_name || '—'}` }),
+          new Paragraph({ text: `Website: ${data.website || '—'}` }),
+          new Paragraph({ text: '' }),
+
+          new Paragraph({
+            children: [new TextRun({ text: 'Product Details', bold: true })],
+          }),
+          new Paragraph({ text: `Product Description: ${data.product_desc || '—'}` }),
+          new Paragraph({ text: `Used in NHS Before: ${data.used_in_nhs ? 'Yes' : 'No'}` }),
+          new Paragraph({ text: '' }),
+
+          new Paragraph({
+            children: [new TextRun({ text: 'Compliance Checklist', bold: true })],
+          }),
+          new Paragraph({ text: `Data Protection Policy: ${data.has_data_policy ? 'Yes' : 'No'}` }),
+          new Paragraph({ text: `ICO Registered: ${data.has_ico_registration ? 'Yes' : 'No'}` }),
+          new Paragraph({ text: `DSP Toolkit Compliant: ${data.is_dsp_toolkit_compliant ? 'Yes' : 'No'}` }),
         ],
       },
     ],

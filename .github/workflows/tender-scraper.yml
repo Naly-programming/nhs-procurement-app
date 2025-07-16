@@ -1,0 +1,33 @@
+name: 🏥 NHS Tender Scraper
+
+on:
+  schedule:
+    - cron: '0 7 * * *' # Run daily at 07:00 UTC (adjust as needed)
+  workflow_dispatch:         # Allow manual runs too
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Tender Scraper
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          CF_API_URL: 'https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search'
+        run: |
+          npx tsx scrapers/contractsFinderApi.ts
+
+      - name: Finish
+        run: echo "Tender scrape complete 🎉"

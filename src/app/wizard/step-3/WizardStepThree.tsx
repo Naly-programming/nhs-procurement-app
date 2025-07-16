@@ -9,6 +9,9 @@ interface StepData {
   website?: string
   product_desc?: string
   used_in_nhs?: boolean
+  has_data_policy?: boolean
+  has_ico_registration?: boolean
+  is_dsp_toolkit_compliant?: boolean
 }
 
 export default function WizardStepThree() {
@@ -57,6 +60,8 @@ export default function WizardStepThree() {
 
   if (loading || !data) return <p className="text-center mt-10">Loading...</p>
 
+  const booleanDisplay = (val?: boolean) => (val ? 'Yes' : 'No')
+
   return (
     <section className="max-w-xl mx-auto px-4 py-12">
       <h2 className="text-2xl font-bold mb-6">Step 3: Review & Submit</h2>
@@ -72,7 +77,17 @@ export default function WizardStepThree() {
           <strong>Product Description:</strong> {data.product_desc || '—'}
         </div>
         <div>
-          <strong>Used in NHS?:</strong> {data.used_in_nhs ? 'Yes' : 'No'}
+          <strong>Used in NHS?:</strong> {booleanDisplay(data.used_in_nhs)}
+        </div>
+        <hr className="my-2" />
+        <div>
+          <strong>Data Protection Policy:</strong> {booleanDisplay(data.has_data_policy)}
+        </div>
+        <div>
+          <strong>ICO Registered:</strong> {booleanDisplay(data.has_ico_registration)}
+        </div>
+        <div>
+          <strong>DSP Toolkit Compliant:</strong> {booleanDisplay(data.is_dsp_toolkit_compliant)}
         </div>
       </div>
 

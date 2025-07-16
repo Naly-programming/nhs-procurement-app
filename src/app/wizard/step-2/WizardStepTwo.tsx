@@ -11,6 +11,9 @@ export default function WizardStepTwo() {
 
   const [productDesc, setProductDesc] = useState('')
   const [usedInNHS, setUsedInNHS] = useState(false)
+  const [hasDataPolicy, setHasDataPolicy] = useState(false)
+  const [hasICORegistration, setHasICORegistration] = useState(false)
+  const [isDSPToolkitCompliant, setIsDSPToolkitCompliant] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,6 +26,9 @@ export default function WizardStepTwo() {
       if (data?.step_data) {
         setProductDesc(data.step_data.product_desc || '')
         setUsedInNHS(data.step_data.used_in_nhs || false)
+        setHasDataPolicy(data.step_data.has_data_policy || false)
+        setHasICORegistration(data.step_data.has_ico_registration || false)
+        setIsDSPToolkitCompliant(data.step_data.is_dsp_toolkit_compliant || false)
       }
     }
 
@@ -40,6 +46,9 @@ export default function WizardStepTwo() {
       ...existing?.step_data,
       product_desc: productDesc,
       used_in_nhs: usedInNHS,
+      has_data_policy: hasDataPolicy,
+      has_ico_registration: hasICORegistration,
+      is_dsp_toolkit_compliant: isDSPToolkitCompliant,
     }
 
     await supabase
@@ -56,13 +65,15 @@ export default function WizardStepTwo() {
 
   return (
     <section className="max-w-xl mx-auto px-4 py-12">
-      <h2 className="text-2xl font-bold mb-6">Step 2: Product Details</h2>
+      <h2 className="text-2xl font-bold mb-6">Step 2: Product & Compliance Info</h2>
+
       <textarea
         placeholder="Product Description"
         value={productDesc}
         onChange={(e) => setProductDesc(e.target.value)}
         className="w-full border p-2 mb-4"
       />
+
       <label className="block mb-4">
         <input
           type="checkbox"
@@ -71,6 +82,36 @@ export default function WizardStepTwo() {
           className="mr-2"
         />
         Has your product ever been used in the NHS?
+      </label>
+
+      <label className="block mb-4">
+        <input
+          type="checkbox"
+          checked={hasDataPolicy}
+          onChange={(e) => setHasDataPolicy(e.target.checked)}
+          className="mr-2"
+        />
+        Do you have a Data Protection Policy?
+      </label>
+
+      <label className="block mb-4">
+        <input
+          type="checkbox"
+          checked={hasICORegistration}
+          onChange={(e) => setHasICORegistration(e.target.checked)}
+          className="mr-2"
+        />
+        Are you ICO Registered?
+      </label>
+
+      <label className="block mb-6">
+        <input
+          type="checkbox"
+          checked={isDSPToolkitCompliant}
+          onChange={(e) => setIsDSPToolkitCompliant(e.target.checked)}
+          className="mr-2"
+        />
+        Are you DSP Toolkit Compliant?
       </label>
 
       <div className="flex justify-between">

@@ -14,15 +14,9 @@ interface DocumentRecord {
   doc_type: 'pdf' | 'docx' | 'markdown'
   file_url: string
   created_at: string
+  submitted_at?: string | null
   file_name?: string
   storage_path?: string
-}
-
-interface IntakeStepData {
-  company_name: string
-  website: string
-  product_desc: string
-  used_in_nhs: boolean
 }
 
 export default function DocumentsPage() {
@@ -41,7 +35,11 @@ export default function DocumentsPage() {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
 
-      if (error) console.error('Error fetching docs:', error)
+      if (error) {
+        console.error('Error fetching docs:', error)
+        return
+      }
+
       setDocs(data || [])
       setLoading(false)
     }
@@ -55,14 +53,14 @@ export default function DocumentsPage() {
 
     const { data: intake, error } = await supabase
       .from('intake_responses')
-      .select('step_data')
+      .select('step_data, submitted_at')
       .eq('user_id', user.id)
       .not('submitted_at', 'is', null)
       .order('submitted_at', { ascending: false })
       .limit(1)
-      .maybeSingle<{ step_data: IntakeStepData }>()
+      .maybeSingle()
 
-    if (error || !intake?.step_data) {
+    if (error || !intake || !intake.step_data) {
       alert('No intake data found. Please complete the wizard first.')
       setGenerating(false)
       return
@@ -102,8 +100,8 @@ export default function DocumentsPage() {
       })
 
     if (uploadError) {
-      console.error('Upload error:', uploadError)
       alert('Upload failed.')
+      console.error(uploadError)
       setGenerating(false)
       return
     }
@@ -125,6 +123,7 @@ export default function DocumentsPage() {
         file_url: urlData.publicUrl,
         file_name: fileName,
         storage_path: filePath,
+        submitted_at: intake.submitted_at ?? new Date().toISOString(),
       },
     ])
 
@@ -143,6 +142,9 @@ export default function DocumentsPage() {
     setGenerating(false)
   }
 
+  const formatDate = (dateStr?: string) =>
+    dateStr ? new Date(dateStr).toLocaleString() : '—'
+
   return (
     <section className="max-w-3xl mx-auto px-4 py-12">
       <h1 className="text-2xl font-bold mb-6">Your Documents</h1>
@@ -156,32 +158,57 @@ export default function DocumentsPage() {
               Generate your procurement pack in your preferred format:
             </p>
             <div className="space-x-4">
-              {['pdf', 'docx', 'markdown'].map((format) => (
-                <button
-                  key={format}
-                  onClick={() => handleGenerateDocs(format as DocumentRecord['doc_type'])}
-                  disabled={generating}
-                  className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700"
-                >
-                  {generating ? 'Working...' : `Generate ${format.toUpperCase()}`}
-                </button>
-              ))}
+              <button
+                onClick={() => handleGenerateDocs('pdf')}
+                disabled={generating}
+                className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700"
+              >
+                {generating ? 'Working...' : 'Generate PDF'}
+              </button>
+              <button
+                onClick={() => handleGenerateDocs('docx')}
+                disabled={generating}
+                className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700"
+              >
+                {generating ? 'Working...' : 'Generate Word Doc'}
+              </button>
+              <button
+                onClick={() => handleGenerateDocs('markdown')}
+                disabled={generating}
+                className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700"
+              >
+                {generating ? 'Working...' : 'Download Markdown Pack'}
+              </button>
             </div>
           </div>
 
           <div className="border rounded">
             {docs.length === 0 ? (
-              <p className="p-4 text-sm text-gray-600">No documents generated yet.</p>
+              <p className="p-4 text-sm text-gray-600">
+                No documents generated yet.
+              </p>
             ) : (
               <ul className="divide-y">
                 {docs.map((doc) => (
-                  <li key={doc.id} className="flex justify-between items-center px-4 py-3">
+                  <li
+                    key={doc.id}
+                    className="flex justify-between items-center px-4 py-3"
+                  >
                     <div>
                       <strong className="block text-sm text-gray-800">
                         {doc.doc_type.toUpperCase()}
                       </strong>
                       <span className="text-xs text-gray-500">
-                        {new Date(doc.created_at).toLocaleString()}
+                        {formatDate(doc.created_at)}
+                      </span>
+                      <span
+                        className={`ml-2 text-xs font-medium ${
+                          doc.submitted_at
+                            ? 'text-green-600'
+                            : 'text-yellow-600'
+                        }`}
+                      >
+                        {doc.submitted_at ? 'Submitted' : 'Not Submitted'}
                       </span>
                     </div>
                     <a
