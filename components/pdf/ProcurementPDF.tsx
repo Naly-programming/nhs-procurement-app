@@ -1,5 +1,11 @@
-// components/pdf/ProcurementPDF.tsx
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer'
+
+interface ProcurementData {
+  company_name?: string
+  website?: string
+  product_desc?: string
+  used_in_nhs?: boolean
+}
 
 const styles = StyleSheet.create({
   page: {
@@ -16,13 +22,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 })
-
-type ProcurementData = {
-  company_name?: string
-  website?: string
-  product_desc?: string
-  used_in_nhs?: boolean
-}
 
 export default function ProcurementPDF({ data }: { data: ProcurementData }) {
   return (
