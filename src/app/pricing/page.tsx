@@ -58,7 +58,7 @@ export default function PricingPage() {
           </details>
           <details className="border p-4 rounded">
             <summary className="font-semibold text-gray-800 cursor-pointer">What happens if I exceed the free plan?</summary>
-            <p className="mt-2">You'll be prompted to upgrade to Pro if you want to generate more documents or export them.</p>
+            <p className="mt-2">You&apos;ll be prompted to upgrade to Pro if you want to generate more documents or export them.</p>
           </details>
         </div>
       </div>
