@@ -21,7 +21,7 @@ export default function LoginPage() {
 
   return (
     <section className="max-w-md mx-auto px-6 py-16">
-      <h1 className="text-2xl font-bold mb-6 text-teal-700">Log In</h1>
+      <h1 className="text-2xl font-bold mb-6 text-primary">Log In</h1>
       <form onSubmit={handleLogin} className="space-y-4">
         <input
           type="email"
@@ -38,7 +38,7 @@ export default function LoginPage() {
           required
         />
         {error && <p className="text-red-600 text-sm">{error}</p>}
-        <button type="submit" className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 w-full">
+        <button type="submit" className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-hover transition-colors w-full">
           Log In
         </button>
       </form>
@@ -46,7 +46,7 @@ export default function LoginPage() {
       {/* Sign-up prompt */}
       <p className="mt-6 text-sm text-center text-gray-600">
         Don&apos;t have an account?{' '}
-        <Link href="/signup" className="text-teal-600 font-medium hover:underline">
+        <Link href="/signup" className="text-primary font-medium hover:underline hover:text-primary-hover transition-colors">
           Sign up
         </Link>
       </p>

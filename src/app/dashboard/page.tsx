@@ -23,7 +23,7 @@ export default function Dashboard() {
 
   return (
     <section className="max-w-4xl mx-auto px-6 py-16">
-      <h1 className="text-3xl font-bold text-teal-700 mb-4">Welcome to Your Dashboard</h1>
+      <h1 className="text-3xl font-bold text-primary mb-4">Welcome to Your Dashboard</h1>
       {user && (
         <p className="mb-6 text-gray-700">
           Logged in as <span className="font-semibold">{user.email}</span>
@@ -33,7 +33,7 @@ export default function Dashboard() {
         <p className="text-gray-700">You&apos;re just a few steps away from being NHS procurement-ready.</p>
         <a
           href="/wizard"
-          className="inline-block bg-teal-600 text-white px-6 py-2 rounded hover:bg-teal-700"
+          className="inline-block bg-primary text-white px-6 py-2 rounded hover:bg-primary-hover transition-colors"
         >
           Start NHS Readiness Wizard
         </a>

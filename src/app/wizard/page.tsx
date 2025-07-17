@@ -73,7 +73,7 @@ export default function WizardStepOne() {
 
       <button
         onClick={handleNext}
-        className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700"
+        className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-hover transition-colors"
       >
         Next Step
       </button>

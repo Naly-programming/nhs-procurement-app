@@ -98,7 +98,7 @@ export default function WizardStepThree() {
         <button
           onClick={handleSubmit}
           disabled={submitting}
-          className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700"
+          className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-hover transition-colors"
         >
           {submitting ? 'Submitting...' : 'Submit & Continue'}
         </button>

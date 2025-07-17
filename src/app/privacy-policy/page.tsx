@@ -2,7 +2,7 @@
 export default function PrivacyPolicyPage() {
   return (
     <section className="max-w-3xl mx-auto px-6 py-16 space-y-6">
-      <h1 className="text-4xl font-bold text-teal-700 mb-4">Privacy Policy</h1>
+      <h1 className="text-4xl font-bold text-primary mb-4">Privacy Policy</h1>
       <p className="text-gray-700">
         We take your privacy seriously. This policy explains how we collect, use, and protect your personal data when using NHS Ready.
       </p>

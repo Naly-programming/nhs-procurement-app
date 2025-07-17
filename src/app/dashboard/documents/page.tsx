@@ -161,21 +161,21 @@ export default function DocumentsPage() {
               <button
                 onClick={() => handleGenerateDocs('pdf')}
                 disabled={generating}
-                className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700"
+                className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-hover transition-colors"
               >
                 {generating ? 'Working...' : 'Generate PDF'}
               </button>
               <button
                 onClick={() => handleGenerateDocs('docx')}
                 disabled={generating}
-                className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700"
+                className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-hover transition-colors"
               >
                 {generating ? 'Working...' : 'Generate Word Doc'}
               </button>
               <button
                 onClick={() => handleGenerateDocs('markdown')}
                 disabled={generating}
-                className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700"
+                className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-hover transition-colors"
               >
                 {generating ? 'Working...' : 'Download Markdown Pack'}
               </button>
@@ -215,7 +215,7 @@ export default function DocumentsPage() {
                       href={doc.file_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-teal-600 underline text-sm"
+                      className="text-primary underline text-sm hover:text-primary-hover transition-colors"
                     >
                       Download
                     </a>

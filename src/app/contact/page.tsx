@@ -22,7 +22,7 @@ export default function ContactPage() {
 
   return (
     <section className="max-w-3xl mx-auto px-6 py-16">
-      <h1 className="text-4xl font-bold text-teal-700 mb-4">Get in Touch</h1>
+      <h1 className="text-4xl font-bold text-primary mb-4">Get in Touch</h1>
       <p className="text-gray-600 mb-8">
         Have questions or want a personalised demo? Fill out the form or book time directly using the calendar below.
       </p>
@@ -58,7 +58,7 @@ export default function ContactPage() {
               onChange={(e) => setMessage(e.target.value)}
             />
           </div>
-          <button type="submit" className="bg-teal-600 text-white px-5 py-2 rounded hover:bg-teal-700">
+          <button type="submit" className="bg-primary text-white px-5 py-2 rounded hover:bg-primary-hover transition-colors">
             Send Message
           </button>
         </form>

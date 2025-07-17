@@ -20,7 +20,7 @@ export default function SignupPage() {
 
   return (
     <section className="max-w-md mx-auto px-6 py-16">
-      <h1 className="text-2xl font-bold mb-6 text-teal-700">Sign Up</h1>
+      <h1 className="text-2xl font-bold mb-6 text-primary">Sign Up</h1>
       <form onSubmit={handleSignup} className="space-y-4">
         <input
           type="email"
@@ -37,7 +37,7 @@ export default function SignupPage() {
           required
         />
         {error && <p className="text-red-600 text-sm">{error}</p>}
-        <button type="submit" className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 w-full">
+        <button type="submit" className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-hover transition-colors w-full">
           Create Account
         </button>
       </form>

@@ -2,12 +2,20 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1a1a1a;
+  --primary: #005eb8; /* NHS Blue */
+  --primary-hover: #003d5c;
+  --secondary: #768692; /* NHS Neutral */
+  --accent: #ffb81c; /* NHS Warm Yellow */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -15,16 +23,31 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
-    --foreground: #ededed;
+    --foreground: #f5f5f5;
+    --primary: #3a7ca5;
+    --primary-hover: #2c5d7d;
   }
 }
 
-html, body {
-  height: 100%;
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  color: var(--foreground);
+  background: var(--background);
+  line-height: 1.6;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
 }
