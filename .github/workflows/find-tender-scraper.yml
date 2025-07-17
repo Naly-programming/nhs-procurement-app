@@ -1,0 +1,19 @@
+name: Find a Tender Scraper
+on:
+  schedule:
+    - cron: '30 7 * * *'
+  workflow_dispatch:
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with: { node-version: '18', cache: 'npm' }
+      - run: npm ci
+      - name: Run FTS Scraper
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npx tsx scrapers/findTenderApi.ts
+      - run: echo "FTS scrape complete 🎉"

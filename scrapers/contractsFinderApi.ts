@@ -71,7 +71,7 @@ async function run() {
   let newCount = 0
 
   do {
-    const params: any = { limit: PAGE_LIMIT, stages: 'tender', q: 'nhs' }
+    const params: any = { limit: PAGE_LIMIT, stages: 'tender' }
     if (cursor) params.cursor = cursor
 
     const resp = await axios.get(CF_API, { params })
