@@ -1,0 +1,23 @@
+name: Sell2Wales Bulk Import
+
+on:
+  schedule:
+    - cron: '0 10 1 * *'  # Run at 10:00 UTC on the 1st of every month
+  workflow_dispatch:
+
+jobs:
+  scrape-sell2wales:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Sell2Wales Bulk Scraper
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npx tsx scrapers/sell2walesApi.ts
