@@ -1,4 +1,6 @@
 // scrapers/contractsFinderApi.ts
+import * as dotenv from 'dotenv';
+dotenv.config({ path: './.env.local' });
 import axios from 'axios'
 import { createClient } from '@supabase/supabase-js'
 
@@ -25,8 +27,14 @@ async function fetchExistingOcidSet(): Promise<Set<string>> {
 // Map API release to your DB schema
 function mapReleaseToTender(release: any) {
   const t = release.tender || {}
-  const cpvs = t.classification?.map((c: any) => c.id) || []
-  const cpvNames = t.classification?.map((c: any) => c.description) || []
+const classifications = Array.isArray(t.classification)
+  ? t.classification
+  : t.classification
+    ? [t.classification]
+    : []
+
+const cpvs = classifications.map((c: any) => c.id)
+const cpvNames = classifications.map((c: any) => c.description)
   const org = release.buyer?.name || ''
   return {
     source: 'contractsfinder',
