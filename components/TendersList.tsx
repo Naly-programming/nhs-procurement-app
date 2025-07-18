@@ -17,6 +17,13 @@ type Tender = {
 export default function TendersList() {
   const [tenders, setTenders] = useState<Tender[]>([])
   const [loading, setLoading] = useState(true)
+  const tabs = [
+    { id: 'all', name: 'All', dbValue: 'all' },
+    { id: 'contractsFinder', name: 'Contracts Finder', dbValue: 'contractsfinder' },
+    { id: 'findTender', name: 'Find Tender', dbValue: 'findtender' },
+    { id: 'publicContractsScotland', name: 'Public Contracts Scotland', dbValue: 'pcs' },
+    { id: 'sell2wales', name: 'Sell2Wales', dbValue: 'sell2wales' },
+  ]
   const [activeTab, setActiveTab] = useState('all')
 
   useEffect(() => {
@@ -26,7 +33,10 @@ export default function TendersList() {
         let query = supabase.from('tenders').select('*')
 
         if (activeTab !== 'all') {
-          query = query.eq('source', activeTab)
+          const tabConfig = tabs.find(t => t.id === activeTab)
+          if (tabConfig) {
+            query = query.eq('source', tabConfig.dbValue)
+          }
         }
 
         const { data, error } = await query
@@ -46,13 +56,13 @@ export default function TendersList() {
   return (
     <div className="mt-8">
       <div className="flex border-b border-gray-200">
-        {['all', 'contractsFinder', 'findTender', 'publicContractsScotland', 'sell2wales'].map((tab) => (
+        {tabs.map((tab) => (
           <button
-            key={tab}
-            className={`px-4 py-2 font-medium text-sm ${activeTab === tab ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
-            onClick={() => setActiveTab(tab)}
+            key={tab.id}
+            className={`px-4 py-2 font-medium text-sm ${activeTab === tab.id ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
+            onClick={() => setActiveTab(tab.id)}
           >
-            {tab.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
+            {tab.name}
           </button>
         ))}
       </div>
