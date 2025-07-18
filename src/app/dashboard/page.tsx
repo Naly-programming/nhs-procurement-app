@@ -38,6 +38,16 @@ export default function Dashboard() {
           Start NHS Readiness Wizard
         </a>
       </div>
+      <div className="mt-8 bg-white p-6 rounded-lg shadow border space-y-4">
+        <h2 className="text-xl font-bold text-primary">Tenders Service</h2>
+        <p className="text-gray-700">View available NHS procurement tenders</p>
+        <a
+          href="/dashboard/tenders"
+          className="inline-block bg-primary text-white px-6 py-2 rounded hover:bg-primary-hover transition-colors"
+        >
+          View Tenders
+        </a>
+      </div>
     </section>
   )
 }
