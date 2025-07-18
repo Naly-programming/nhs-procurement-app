@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-lg font-semibold text-primary mb-4">NHS Ready</h3>
+            <h3 className="text-lg font-semibold text-primary mb-4">Coentry</h3>
             <p className="text-secondary text-sm">
               Helping digital health companies navigate NHS procurement.
             </p>

@@ -7,8 +7,8 @@ import Footer from '@/components/Footer'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'NHS Ready',
-  description: 'NHS Procurement SaaS',
+  title: 'Coentry',
+  description: 'Healthcare Procurement Platform',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="flex flex-col min-h-screen bg-background text-foreground">
         <UserProvider>
           <Header />
-          <main className="flex-grow px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <main className="flex-grow px-4 sm:px-6 lg:px-8 pt-20 pb-6 sm:py-8">
             <div className="mx-auto w-full max-w-7xl">
               {children}
             </div>
