@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabaseClient'
+import Link from 'next/link'
 import { useUser } from '@/lib/UserContext'
 
 type Tender = {
@@ -15,13 +16,15 @@ type Tender = {
   value_max: string | null
   source: string
   industry: string[]
-  // Add other fields as needed
 }
 
 export default function TendersList() {
   const [tenders, setTenders] = useState<Tender[]>([])
   const [loading, setLoading] = useState(true)
   const { user } = useUser()
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage] = useState(10)
+  const [totalItems, setTotalItems] = useState(0)
   const tabs = [
     { id: 'all', name: 'All', dbValue: 'all' },
     { id: 'contractsFinder', name: 'Contracts Finder', dbValue: 'contractsfinder' },
@@ -49,7 +52,12 @@ export default function TendersList() {
     const fetchTenders = async () => {
       try {
         setLoading(true)
-        let query = supabase.from('tenders').select('*')
+        let query = supabase.from('tenders').select('*', { count: 'exact' })
+        
+        // Apply pagination
+        const from = (currentPage - 1) * itemsPerPage
+        const to = from + itemsPerPage - 1
+        query = query.range(from, to)
 
         if (activeTab !== 'all') {
           const tabConfig = tabs.find(t => t.id === activeTab)
@@ -58,10 +66,7 @@ export default function TendersList() {
           }
         }
 
-        // Fetch suggested tenders if user has set industry
-        console.log('Current user industry state:', { userIndustry, hasUser: !!user })
-        
-        // Temporary test data - remove after verification
+        // Temporary test data
         const testTenders = [{
           id: 'test-tender-1',
           title: 'Test Tender Matching Your Industry',
@@ -75,9 +80,6 @@ export default function TendersList() {
         }]
         
         if (userIndustry) {
-          console.log('User industry:', userIndustry)
-          console.log('Fetching tenders matching any of:', [userIndustry])
-          
           const { data: suggestedData, error } = await supabase
             .from('tenders')
             .select('*')
@@ -86,26 +88,15 @@ export default function TendersList() {
             
           if (error) {
             console.error('Error fetching suggested tenders:', error)
-          } else {
-            console.log('Suggested tenders found:', {
-              count: suggestedData?.length || 0,
-              matches: suggestedData?.map(t => ({
-                id: t.id,
-                title: t.title,
-                matchedIndustries: t.industry.filter((i: string) => i === userIndustry)
-              }))
-            })
           }
-          
           setSuggestedTenders([...suggestedData || [], ...testTenders])
-        } else {
-          console.log('No user industry set - skipping suggested tenders')
         }
 
-        const { data, error } = await query.order('published_date', { ascending: false })
+        const { data, error, count } = await query.order('published_date', { ascending: false })
 
         if (error) throw error
         setTenders(data || [])
+        setTotalItems(count || 0)
       } catch (error) {
         console.error('Error fetching tenders:', error)
       } finally {
@@ -114,7 +105,7 @@ export default function TendersList() {
     }
 
     fetchTenders()
-  }, [activeTab, user, userIndustry])
+  }, [activeTab, user, userIndustry, currentPage])
 
   return (
     <div className="mt-8">
@@ -138,17 +129,23 @@ export default function TendersList() {
             <p>No tenders found</p>
           ) : (
             tenders.map((tender) => (
-              <div key={tender.id} className="p-4 border rounded-lg hover:shadow transition-shadow">
-                <h3 className="font-bold text-lg">{tender.title}</h3>
-                <p className="text-gray-600 mt-1">{tender.description}</p>
-                <div className="mt-2 text-sm text-gray-500">
-                  <span>Deadline: {tender.closing_date ? new Date(tender.closing_date).toLocaleDateString('en-GB') : 'N/A'}</span>
-                  <span className="mx-2">•</span>
-                  <span>Value: {formatValueDisplay(tender.value_min, tender.value_max)}</span>
-                  <span className="mx-2">•</span>
-                  <span>{tender.industry?.[0] || ''}</span>
+              <Link
+                key={tender.id}
+                href={`/dashboard/tenders/${tender.id}`}
+                className="block p-4 border rounded-lg hover:shadow transition-shadow"
+              >
+                <div>
+                  <h3 className="font-bold text-lg">{tender.title}</h3>
+                  <p className="text-gray-600 mt-1">{tender.description}</p>
+                  <div className="mt-2 text-sm text-gray-500">
+                    <span>Deadline: {tender.closing_date ? new Date(tender.closing_date).toLocaleDateString('en-GB') : 'N/A'}</span>
+                    <span className="mx-2">•</span>
+                    <span>Value: {formatValueDisplay(tender.value_min, tender.value_max)}</span>
+                    <span className="mx-2">•</span>
+                    <span>{tender.industry?.[0] || ''}</span>
+                  </div>
                 </div>
-              </div>
+              </Link>
             ))
           )}
         </div>
@@ -162,7 +159,11 @@ export default function TendersList() {
           </div>
           <div className="border border-t-0 rounded-b-lg divide-y">
             {suggestedTenders.map((tender) => (
-              <div key={`suggested-${tender.id}`} className="p-4 hover:bg-blue-50 transition-colors">
+              <Link
+                key={`suggested-${tender.id}`}
+                href={`/dashboard/tenders/${tender.id}`}
+                className="block p-4 hover:bg-blue-50 transition-colors"
+              >
                 <div className="flex items-start gap-4">
                   <div className="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -181,7 +182,7 @@ export default function TendersList() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
