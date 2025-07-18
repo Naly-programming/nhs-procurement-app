@@ -17,6 +17,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (user) fetchProfile()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   const fetchProfile = async () => {
@@ -26,13 +27,18 @@ export default function ProfilePage() {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user?.id)
+        .eq('id', user.id)
         .single()
 
       if (error) throw error
       if (data) setProfile(data)
-    } catch (error) {
-      alert('Error loading profile data')
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error loading profile data:', error.message)
+        alert('Error loading profile data')
+      } else {
+        alert('Unknown error loading profile')
+      }
     } finally {
       setLoading(false)
     }
@@ -40,7 +46,7 @@ export default function ProfilePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     try {
       setLoading(true)
       const updates = {
@@ -60,9 +66,13 @@ export default function ProfilePage() {
         throw error
       }
       alert('Profile updated successfully!')
-    } catch (error: any) {
-      console.error('Profile update failed:', error)
-      alert(`Error updating profile: ${error?.message || 'Unknown error'}`)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Profile update failed:', error.message)
+        alert(`Error updating profile: ${error.message}`)
+      } else {
+        alert('Unknown error updating profile')
+      }
     } finally {
       setLoading(false)
     }
@@ -85,13 +95,20 @@ export default function ProfilePage() {
 
       if (uploadError) throw uploadError
 
-      const { data: { publicUrl } } = supabase.storage
+      const { data } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath)
 
-      setProfile({ ...profile, avatar_url: publicUrl })
-    } catch (error) {
-      alert('Error uploading avatar')
+      if (data?.publicUrl) {
+        setProfile({ ...profile, avatar_url: data.publicUrl })
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Avatar upload failed:', error.message)
+        alert('Error uploading avatar')
+      } else {
+        alert('Unknown error uploading avatar')
+      }
     } finally {
       setLoading(false)
     }
@@ -100,7 +117,7 @@ export default function ProfilePage() {
   return (
     <div className="max-w-md mx-auto p-4 pt-20">
       <h1 className="text-2xl font-bold mb-6">Your Profile</h1>
-      
+
       {loading ? (
         <p>Loading profile...</p>
       ) : (
@@ -110,7 +127,7 @@ export default function ProfilePage() {
             <input
               type="text"
               value={profile.full_name || ''}
-              onChange={(e) => setProfile({...profile, full_name: e.target.value})}
+              onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
               className="w-full border rounded p-2"
             />
           </div>
@@ -120,7 +137,7 @@ export default function ProfilePage() {
             <input
               type="text"
               value={profile.company || ''}
-              onChange={(e) => setProfile({...profile, company: e.target.value})}
+              onChange={(e) => setProfile({ ...profile, company: e.target.value })}
               className="w-full border rounded p-2"
             />
           </div>
@@ -130,7 +147,7 @@ export default function ProfilePage() {
             <input
               type="text"
               value={profile.phone || ''}
-              onChange={(e) => setProfile({...profile, phone: e.target.value})}
+              onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
               className="w-full border rounded p-2"
             />
           </div>
@@ -140,7 +157,7 @@ export default function ProfilePage() {
             <input
               type="number"
               value={profile.age || ''}
-              onChange={(e) => setProfile({...profile, age: e.target.value})}
+              onChange={(e) => setProfile({ ...profile, age: e.target.value })}
               className="w-full border rounded p-2"
             />
           </div>
@@ -148,13 +165,13 @@ export default function ProfilePage() {
           <div>
             <label className="block text-sm font-medium mb-1">Profile Picture</label>
             {profile.avatar_url ? (
-              <img 
-                src={profile.avatar_url} 
-                alt="Avatar" 
+              <img
+                src={profile.avatar_url}
+                alt="Avatar"
                 className="w-24 h-24 rounded-full mb-2"
               />
             ) : null}
-            <input 
+            <input
               type="file"
               accept="image/*"
               onChange={uploadAvatar}
@@ -162,8 +179,8 @@ export default function ProfilePage() {
             />
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
             className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
           >
