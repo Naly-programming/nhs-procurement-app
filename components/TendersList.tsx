@@ -2,21 +2,26 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabaseClient'
+import { useUser } from '@/lib/UserContext'
 
 type Tender = {
   id: string
   title: string
   description: string
   published_date: string
-  deadline: string
-  value: number
+  closing_date: string | null
+  contract_start_date: string | null
+  value_min: string | null
+  value_max: string | null
   source: string
+  industry: string[]
   // Add other fields as needed
 }
 
 export default function TendersList() {
   const [tenders, setTenders] = useState<Tender[]>([])
   const [loading, setLoading] = useState(true)
+  const { user } = useUser()
   const tabs = [
     { id: 'all', name: 'All', dbValue: 'all' },
     { id: 'contractsFinder', name: 'Contracts Finder', dbValue: 'contractsfinder' },
@@ -25,8 +30,22 @@ export default function TendersList() {
     { id: 'sell2wales', name: 'Sell2Wales', dbValue: 'sell2wales' },
   ]
   const [activeTab, setActiveTab] = useState('all')
+  const [suggestedTenders, setSuggestedTenders] = useState<Tender[]>([])
+  const [userIndustry, setUserIndustry] = useState('')
 
   useEffect(() => {
+    const fetchUserIndustry = async () => {
+      if (!user?.id) return
+      const { data } = await supabase
+        .from('profiles')
+        .select('industry')
+        .eq('id', user.id)
+        .single()
+      if (data?.industry) {
+        setUserIndustry(data.industry)
+      }
+    }
+
     const fetchTenders = async () => {
       try {
         setLoading(true)
@@ -39,7 +58,51 @@ export default function TendersList() {
           }
         }
 
-        const { data, error } = await query
+        // Fetch suggested tenders if user has set industry
+        console.log('Current user industry state:', { userIndustry, hasUser: !!user })
+        
+        // Temporary test data - remove after verification
+        const testTenders = [{
+          id: 'test-tender-1',
+          title: 'Test Tender Matching Your Industry',
+          description: 'This tender matches your selected industry',
+          published_date: new Date().toISOString(),
+          closing_date: new Date(Date.now() + 86400000).toISOString(),
+          value_min: '100000',
+          value_max: '100000',
+          source: 'test',
+          industry: [userIndustry || 'construction', 'technology']
+        }]
+        
+        if (userIndustry) {
+          console.log('User industry:', userIndustry)
+          console.log('Fetching tenders matching any of:', [userIndustry])
+          
+          const { data: suggestedData, error } = await supabase
+            .from('tenders')
+            .select('*')
+            .contains('industry', [userIndustry])
+            .limit(5)
+            
+          if (error) {
+            console.error('Error fetching suggested tenders:', error)
+          } else {
+            console.log('Suggested tenders found:', {
+              count: suggestedData?.length || 0,
+              matches: suggestedData?.map(t => ({
+                id: t.id,
+                title: t.title,
+                matchedIndustries: t.industry.filter((i: string) => i === userIndustry)
+              }))
+            })
+          }
+          
+          setSuggestedTenders([...suggestedData || [], ...testTenders])
+        } else {
+          console.log('No user industry set - skipping suggested tenders')
+        }
+
+        const { data, error } = await query.order('published_date', { ascending: false })
 
         if (error) throw error
         setTenders(data || [])
@@ -51,7 +114,7 @@ export default function TendersList() {
     }
 
     fetchTenders()
-  }, [activeTab])
+  }, [activeTab, user, userIndustry])
 
   return (
     <div className="mt-8">
@@ -79,17 +142,57 @@ export default function TendersList() {
                 <h3 className="font-bold text-lg">{tender.title}</h3>
                 <p className="text-gray-600 mt-1">{tender.description}</p>
                 <div className="mt-2 text-sm text-gray-500">
-                  <span>Published: {new Date(tender.published_date).toLocaleDateString()}</span>
+                  <span>Deadline: {tender.closing_date ? new Date(tender.closing_date).toLocaleDateString('en-GB') : 'N/A'}</span>
                   <span className="mx-2">•</span>
-                  <span>Deadline: {new Date(tender.deadline).toLocaleDateString()}</span>
+                  <span>Value: {formatValueDisplay(tender.value_min, tender.value_max)}</span>
                   <span className="mx-2">•</span>
-                  <span>Value: £{tender.value?.toLocaleString() || 'N/A'}</span>
+                  <span>{tender.industry?.[0] || ''}</span>
                 </div>
               </div>
             ))
           )}
         </div>
       )}
+
+      {suggestedTenders.length > 0 && (
+        <div className="mb-8">
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-t-lg">
+            <h3 className="text-xl font-bold">Suggested for You</h3>
+            <p className="text-blue-100">Based on your selected industries</p>
+          </div>
+          <div className="border border-t-0 rounded-b-lg divide-y">
+            {suggestedTenders.map((tender) => (
+              <div key={`suggested-${tender.id}`} className="p-4 hover:bg-blue-50 transition-colors">
+                <div className="flex items-start gap-4">
+                  <div className="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg">{tender.title}</h3>
+                    <p className="text-gray-600 mt-1">{tender.description}</p>
+                    <div className="mt-2 text-sm text-gray-500">
+                      <span>Deadline: {tender.closing_date ? new Date(tender.closing_date).toLocaleDateString('en-GB') : 'N/A'}</span>
+                      <span className="mx-2">•</span>
+                      <span>Value: {formatValueDisplay(tender.value_min, tender.value_max)}</span>
+                      <span className="mx-2">•</span>
+                      <span>{tender.industry?.[0] || ''}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
+}
+
+function formatValueDisplay(min?: string | null, max?: string | null): string {
+  if (!min || min === '0') {
+    return max && max !== '0' ? `Up to £${max}` : 'N/A'
+  }
+  return max && max !== min ? `£${min}-£${max}` : `£${min}`
 }

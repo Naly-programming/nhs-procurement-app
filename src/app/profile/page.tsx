@@ -12,8 +12,10 @@ export default function ProfilePage() {
     company: '',
     phone: '',
     age: '',
-    avatar_url: ''
+    avatar_url: '',
+    industry: [] as string[]
   })
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   useEffect(() => {
     if (user) fetchProfile()
@@ -160,6 +162,60 @@ export default function ProfilePage() {
               onChange={(e) => setProfile({ ...profile, age: e.target.value })}
               className="w-full border rounded p-2"
             />
+          </div>
+
+          <div className="relative">
+            <label className="block text-sm font-medium mb-1">Industries</label>
+            <div className="relative">
+              <div
+                className="flex flex-wrap gap-2 min-h-10 p-2 border rounded-lg bg-white cursor-pointer"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                {profile.industry.length > 0 ? (
+                  profile.industry.map((industry) => (
+                    <span
+                      key={industry}
+                      className="inline-flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-800 text-sm"
+                    >
+                      {industry}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setProfile(prev => ({
+                            ...prev,
+                            industry: prev.industry.filter(i => i !== industry)
+                          }))
+                        }}
+                        className="ml-1.5 text-blue-500 hover:text-blue-700"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-gray-400">Select industries...</span>
+                )}
+              </div>
+              {isDropdownOpen && (
+                <div className="mt-1 border rounded-lg shadow-lg bg-white absolute z-10 w-full">
+                {['Healthcare', 'Construction', 'Technology', 'Education', 'Manufacturing']
+                  .filter(industry => !profile.industry.includes(industry))
+                  .map((industry) => (
+                    <div
+                      key={industry}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => setProfile(prev => ({
+                        ...prev,
+                        industry: [...prev.industry, industry]
+                      }))}
+                    >
+                      {industry}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           <div>
