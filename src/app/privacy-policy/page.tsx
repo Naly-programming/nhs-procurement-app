@@ -4,7 +4,7 @@ export default function PrivacyPolicyPage() {
     <section className="max-w-3xl mx-auto px-6 py-16 space-y-6">
       <h1 className="text-4xl font-bold text-primary mb-4">Privacy Policy</h1>
       <p className="text-gray-700">
-        We take your privacy seriously. This policy explains how we collect, use, and protect your personal data when using NHS Ready.
+        We take your privacy seriously. This policy explains how we collect, use, and protect your personal data when using Coentry.
       </p>
       <p className="text-gray-700">
         We only collect information that is necessary to provide our services. This may include your email, name, company, and any data you submit via the platform.

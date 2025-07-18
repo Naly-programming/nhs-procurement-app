@@ -4,7 +4,7 @@ export default function TermsPage() {
     <section className="max-w-3xl mx-auto px-6 py-16 space-y-6">
       <h1 className="text-4xl font-bold text-teal-700 mb-4">Terms & Conditions</h1>
       <p className="text-gray-700">
-        By using NHS Ready, you agree to the following terms of service.
+        By using Coentry, you agree to the following terms of service.
       </p>
       <p className="text-gray-700">
         The service is provided “as is” with no guarantees of accuracy or compliance. You are responsible for reviewing all output before using it in a formal procurement process.

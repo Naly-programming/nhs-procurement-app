@@ -4,7 +4,7 @@ export default function Home() {
     <section className="py-8 sm:py-16 lg:py-20">
       <div className="text-center px-4">
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-primary mb-4 sm:mb-6 leading-tight">
-          NHS Procurement, <span className="text-accent">Simplified</span>.
+          Market penetration specialists.
         </h1>
         <p className="text-base sm:text-xl text-secondary mb-8 sm:mb-10 max-w-2xl mx-auto">
           We help digital health companies become NHS procurement-ready in days, not months.

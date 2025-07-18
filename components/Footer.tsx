@@ -33,7 +33,7 @@ export default function Footer() {
         
         <div className="mt-8 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-secondary">
-            © {new Date().getFullYear()} NHS Ready Ltd. All rights reserved.
+            © {new Date().getFullYear()} Coentry Partners ltd. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             {/* Social icons would go here */}
