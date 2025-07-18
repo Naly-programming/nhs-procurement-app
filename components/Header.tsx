@@ -13,53 +13,74 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-gray-900 text-gray-100">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="flex h-16 items-center justify-between">
+    <header className="fixed top-0 inset-x-0 bg-white shadow-sm z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo + Nav Links */}
           <div className="flex items-center space-x-8">
-            <Link href="/" className="text-xl font-bold">
-              <span className="text-white">NHS</span>
-              <span className="text-blue-400">Ready</span>
+            <Link href="/" className="text-2xl font-bold text-gray-900">
+              NHS Ready
             </Link>
-            
-            <nav className="hidden md:flex items-center space-x-6">
-              <Link href="/about" className="hover:text-blue-400 transition-colors">
-                About
-              </Link>
-              <Link href="/pricing" className="hover:text-blue-400 transition-colors">
-                Pricing
-              </Link>
-              <Link href="/contact" className="hover:text-blue-400 transition-colors">
-                Contact
-              </Link>
-            </nav>
+            <div className="hidden md:flex space-x-6">
+              <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">Dashboard</Link>
+              <Link href="/about" className="text-gray-600 hover:text-gray-900">About</Link>
+              <Link href="/pricing" className="text-gray-600 hover:text-gray-900">Pricing</Link>
+              <Link href="/contact" className="text-gray-600 hover:text-gray-900">Contact</Link>
+            </div>
           </div>
 
+          {/* Centered Search */}
+          <div className="flex-1 px-4">
+            <div className="relative max-w-md mx-auto">
+              <input
+                type="text"
+                placeholder="Search"
+                className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Notification & User */}
           <div className="flex items-center space-x-4">
             {!loading && user ? (
               <>
-                <span className="text-sm hidden md:block">{user.email}</span>
+                <button className="relative text-gray-600 hover:text-gray-900 focus:outline-none">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V5a1 1 0 10-2 0v.083A6 6 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                </button>
                 <button
                   onClick={handleLogout}
-                  className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-md transition-colors"
+                  className="text-gray-600 hover:text-gray-900 focus:outline-none"
                 >
-                  Log out
+                  <img
+                    src={user.user_metadata?.avatar_url || "https://placehold.co/400"}
+                    alt="User avatar"
+                    className="w-10 h-10 rounded-full border border-gray-200"
+                  />
                 </button>
               </>
             ) : (
               <Link
                 href="/login"
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-md transition-colors"
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
               >
-                Log In
+                Login
               </Link>
             )}
           </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden">
-            <button className="p-2 hover:text-blue-400">
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
