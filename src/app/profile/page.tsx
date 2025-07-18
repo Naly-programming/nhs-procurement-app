@@ -182,7 +182,7 @@ export default function ProfilePage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
+            className="w-full bg-primary text-white px-6 py-2 rounded hover:bg-primary-hover transition-colors" 
           >
             {loading ? 'Saving...' : 'Save Profile'}
           </button>
