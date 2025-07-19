@@ -23,7 +23,7 @@ export default function TendersList() {
   const [loading, setLoading] = useState(true)
   const { user } = useUser()
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage] = useState(10)
+  const [itemsPerPage] = useState(50) // Increased from 10 to 50
   const [totalItems, setTotalItems] = useState(0)
   const tabs = [
     { id: 'all', name: 'All', dbValue: 'all' },
@@ -135,8 +135,13 @@ export default function TendersList() {
                 className="block p-4 border rounded-lg hover:shadow transition-shadow"
               >
                 <div>
-                  <h3 className="font-bold text-lg">{tender.title}</h3>
-                  <p className="text-gray-600 mt-1">{tender.description}</p>
+                  <h3 className="font-bold text-lg line-clamp-1">{tender.title}</h3>
+                  <p className="text-gray-600 mt-1 line-clamp-3">
+                    {tender.description}
+                    {tender.description.length > 200 && (
+                      <span className="text-primary ml-1">... Read more</span>
+                    )}
+                  </p>
                   <div className="mt-2 text-sm text-gray-500">
                     <span>Deadline: {tender.closing_date ? new Date(tender.closing_date).toLocaleDateString('en-GB') : 'N/A'}</span>
                     <span className="mx-2">•</span>
@@ -148,6 +153,76 @@ export default function TendersList() {
               </Link>
             ))
           )}
+        </div>
+      )}
+
+      {totalItems > itemsPerPage && (
+        <div className="flex justify-center mt-8">
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className={`px-4 py-2 rounded ${currentPage === 1 ? 'bg-gray-200 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary-dark'}`}
+            >
+              Previous
+            </button>
+            
+            {currentPage > 3 && (
+              <button
+                onClick={() => setCurrentPage(1)}
+                className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+              >
+                1
+              </button>
+            )}
+            
+            {currentPage > 4 && <span className="px-2 py-2">...</span>}
+            
+            {Array.from({ length: Math.min(5, Math.ceil(totalItems / itemsPerPage)) }, (_, i) => {
+              let pageNum
+              if (currentPage <= 3) {
+                pageNum = i + 1
+              } else if (currentPage >= Math.ceil(totalItems / itemsPerPage) - 2) {
+                pageNum = Math.ceil(totalItems / itemsPerPage) - 4 + i
+              } else {
+                pageNum = currentPage - 2 + i
+              }
+              
+              if (pageNum > 0 && pageNum <= Math.ceil(totalItems / itemsPerPage)) {
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`px-4 py-2 rounded ${currentPage === pageNum ? 'bg-primary text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                  >
+                    {pageNum}
+                  </button>
+                )
+              }
+              return null
+            })}
+            
+            {currentPage < Math.ceil(totalItems / itemsPerPage) - 3 && (
+              <span className="px-2 py-2">...</span>
+            )}
+            
+            {currentPage < Math.ceil(totalItems / itemsPerPage) - 2 && (
+              <button
+                onClick={() => setCurrentPage(Math.ceil(totalItems / itemsPerPage))}
+                className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+              >
+                {Math.ceil(totalItems / itemsPerPage)}
+              </button>
+            )}
+            
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(totalItems / itemsPerPage)))}
+              disabled={currentPage === Math.ceil(totalItems / itemsPerPage)}
+              className={`px-4 py-2 rounded ${currentPage === Math.ceil(totalItems / itemsPerPage) ? 'bg-gray-200 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary-dark'}`}
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
 
@@ -171,8 +246,13 @@ export default function TendersList() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">{tender.title}</h3>
-                    <p className="text-gray-600 mt-1">{tender.description}</p>
+                    <h3 className="font-bold text-lg line-clamp-1">{tender.title}</h3>
+                    <p className="text-gray-600 mt-1 line-clamp-3">
+                      {tender.description}
+                      {tender.description.length > 200 && (
+                        <span className="text-primary ml-1">... Read more</span>
+                      )}
+                    </p>
                     <div className="mt-2 text-sm text-gray-500">
                       <span>Deadline: {tender.closing_date ? new Date(tender.closing_date).toLocaleDateString('en-GB') : 'N/A'}</span>
                       <span className="mx-2">•</span>
