@@ -28,7 +28,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-black opacity-70" />
         <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
           <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-5 leading-tight">
-            Market penetration specialists.
+            Market penetration specialists
           </h1>
           <p className="text-sm sm:text-lg text-white/90 mb-6 sm:mb-8 max-w-2xl">
             We help innovators break into regulated markets — fast.<br />
