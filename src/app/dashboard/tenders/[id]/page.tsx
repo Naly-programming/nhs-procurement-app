@@ -2,15 +2,21 @@ import { supabase } from '@/lib/supabaseClient'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 
-interface PageProps {
-  params: {
-    id: string
-  }
+export async function generateStaticParams() {
+  const { data: tenders } = await supabase
+    .from('tenders')
+    .select('id')
+
+  return tenders?.map((tender) => ({
+    id: tender.id.toString(),
+  })) || []
 }
 
 export default async function TenderDetail({
   params,
-}: PageProps) {
+}: {
+  params: { id: string }
+}) {
   const { data: tender } = await supabase
     .from('tenders')
     .select('*')
