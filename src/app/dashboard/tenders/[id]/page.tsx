@@ -15,12 +15,13 @@ export async function generateStaticParams() {
 export default async function TenderDetail({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const awaitedParams = await params;
   const { data: tender } = await supabase
     .from('tenders')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', awaitedParams.id)
     .single()
 
   if (!tender) return notFound()
