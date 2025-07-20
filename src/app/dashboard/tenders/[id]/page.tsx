@@ -2,11 +2,15 @@ import { supabase } from '@/lib/supabaseClient'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 
+interface PageProps {
+  params: {
+    id: string
+  }
+}
+
 export default async function TenderDetail({
   params,
-}: {
-  params: { id: string }
-}) {
+}: PageProps) {
   const { data: tender } = await supabase
     .from('tenders')
     .select('*')
