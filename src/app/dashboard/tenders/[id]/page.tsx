@@ -2,7 +2,14 @@ import { supabase } from '@/lib/supabaseClient'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 
-export default async function TenderDetail({ params }: { params: { id: string } }) {
+// Properly type the props
+interface TenderDetailProps {
+  params: {
+    id: string
+  }
+}
+
+export default async function TenderDetail({ params }: TenderDetailProps) {
   const { data: tender } = await supabase
     .from('tenders')
     .select('*')
@@ -23,7 +30,7 @@ export default async function TenderDetail({ params }: { params: { id: string } 
       </div>
       <div className="bg-white rounded-lg shadow p-6">
         <h1 className="text-2xl font-bold mb-4">{tender.title}</h1>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <h2 className="text-lg font-semibold mb-2">Basic Information</h2>
