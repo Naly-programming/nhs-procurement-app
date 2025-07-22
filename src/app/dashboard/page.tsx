@@ -58,6 +58,28 @@ export default function Dashboard() {
           View Tenders
         </Link>
       </div>
+
+      <div className="mt-8 bg-white p-6 rounded-lg shadow border space-y-4">
+        <h2 className="text-xl font-bold text-primary">Contracts</h2>
+        <p className="text-gray-700">Create and sign contract documents</p>
+        <Link
+          href="/dashboard/contracts"
+          className="inline-block bg-primary text-white px-6 py-2 rounded hover:bg-primary-hover transition-colors"
+        >
+          Manage Contracts
+        </Link>
+      </div>
+
+      <div className="mt-8 bg-white p-6 rounded-lg shadow border space-y-4">
+        <h2 className="text-xl font-bold text-primary">ClauseMind</h2>
+        <p className="text-gray-700">Draft contracts with AI assistance</p>
+        <Link
+          href="/dashboard/clausemind"
+          className="inline-block bg-primary text-white px-6 py-2 rounded hover:bg-primary-hover transition-colors"
+        >
+          Open ClauseMind
+        </Link>
+      </div>
     </section>
   );
 }

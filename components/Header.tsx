@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useUser } from '@/lib/UserContext'
 import { supabase } from '@/lib/supabaseClient'
 
@@ -21,9 +22,11 @@ export default function Header() {
           {/* Logo + Nav Links */}
           <div className="flex items-center space-x-8">
             <Link href="/" className="flex items-center">
-              <img
+              <Image
                 src="/logo.svg"
                 alt="Coentry"
+                width={64}
+                height={64}
                 className="h-16 w-auto"
               />
             </Link>
@@ -50,9 +53,11 @@ export default function Header() {
                   href="/profile"
                   className="text-gray-600 hover:text-gray-900 focus:outline-none"
                 >
-                  <img
+                  <Image
                     src={user.user_metadata?.avatar_url || "https://placehold.co/400"}
                     alt="User avatar"
+                    width={40}
+                    height={40}
                     className="w-10 h-10 rounded-full border border-gray-200"
                   />
                 </Link>
@@ -116,3 +121,4 @@ export default function Header() {
     </header>
   )
 }
+
