@@ -5,7 +5,12 @@ import ContractPDF from '@/components/pdf/ContractPDF'
 import { globalLimiter } from '@/lib/rateLimit'
 import { track } from '@/lib/analytics'
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+import type { NextRequest } from 'next/server'
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const ip = request.headers.get('x-forwarded-for') || 'global'
   if (!globalLimiter.check(ip)) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
@@ -20,7 +25,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
   const doc = <ContractPDF title={data.title} clauses={clauses} />
   const blob = await pdf(doc).toBuffer()
   track('contract_exported', { id })
-  return new NextResponse(blob, {
+  return new NextResponse(blob as unknown as BodyInit, {
     status: 200,
     headers: { 'Content-Type': 'application/pdf' },
   })
