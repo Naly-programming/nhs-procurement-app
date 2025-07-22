@@ -5,6 +5,14 @@ import { supabase } from '@/lib/supabaseClient'
 import Link from 'next/link'
 import { useUser } from '@/lib/UserContext'
 
+const TABS = [
+  { id: 'all', name: 'All', dbValue: 'all' },
+  { id: 'contractsFinder', name: 'Contracts Finder', dbValue: 'contractsfinder' },
+  { id: 'findTender', name: 'Find Tender', dbValue: 'findtender' },
+  { id: 'publicContractsScotland', name: 'Public Contracts Scotland', dbValue: 'pcs' },
+  { id: 'sell2wales', name: 'Sell2Wales', dbValue: 'sell2wales' },
+]
+
 type Tender = {
   id: string
   title: string
@@ -23,32 +31,14 @@ export default function TendersList() {
   const [loading, setLoading] = useState(true)
   const { user } = useUser()
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage] = useState(50) // Increased from 10 to 50
+  const itemsPerPage = 50
   const [totalItems, setTotalItems] = useState(0)
-  const tabs = [
-    { id: 'all', name: 'All', dbValue: 'all' },
-    { id: 'contractsFinder', name: 'Contracts Finder', dbValue: 'contractsfinder' },
-    { id: 'findTender', name: 'Find Tender', dbValue: 'findtender' },
-    { id: 'publicContractsScotland', name: 'Public Contracts Scotland', dbValue: 'pcs' },
-    { id: 'sell2wales', name: 'Sell2Wales', dbValue: 'sell2wales' },
-  ]
+  const tabs = TABS
   const [activeTab, setActiveTab] = useState('all')
   const [suggestedTenders, setSuggestedTenders] = useState<Tender[]>([])
   const [userIndustry, setUserIndustry] = useState('')
 
   useEffect(() => {
-    const fetchUserIndustry = async () => {
-      if (!user?.id) return
-      const { data } = await supabase
-        .from('profiles')
-        .select('industry')
-        .eq('id', user.id)
-        .single()
-      if (data?.industry) {
-        setUserIndustry(data.industry)
-      }
-    }
-
     const fetchTenders = async () => {
       try {
         setLoading(true)
@@ -104,8 +94,24 @@ export default function TendersList() {
       }
     }
 
-    fetchTenders()
-  }, [activeTab, user, userIndustry, currentPage])
+    const fetchData = async () => {
+      if (!user?.id) return
+      if (!userIndustry) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('industry')
+          .eq('id', user.id)
+          .single()
+        if (data?.industry) {
+          setUserIndustry(data.industry)
+        }
+      }
+      await fetchTenders()
+    }
+
+    fetchData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, user, currentPage, userIndustry])
 
   return (
     <div className="mt-8">
