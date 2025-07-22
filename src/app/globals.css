@@ -53,3 +53,11 @@ body {
     font-size: 14px;
   }
 }
+.ProseMirror {
+  min-height: 6rem;
+  padding: 0.5rem;
+  outline: none;
+}
+.ProseMirror > * + * {
+  margin-top: 0.75em;
+}
