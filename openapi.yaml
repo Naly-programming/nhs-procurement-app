@@ -1,0 +1,80 @@
+openapi: 3.0.0
+info:
+  title: ClauseMind API
+  version: 0.1.0
+paths:
+  /api/contracts:
+    get:
+      summary: List contracts for a user
+      parameters:
+        - in: query
+          name: user_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Contract list
+    post:
+      summary: Create a contract
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                title:
+                  type: string
+                content:
+                  type: string
+              required: [user_id, title]
+      responses:
+        '200':
+          description: Created contract ID
+  /api/contracts/{id}:
+    get:
+      summary: Get contract
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200': { description: Contract record }
+    put:
+      summary: Update contract
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+    delete:
+      summary: Delete contract
+  /api/contracts/{id}/export:
+    get:
+      summary: Export contract as PDF
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+  /api/contracts/{id}/sign:
+    post:
+      summary: Submit a signature
+  /api/contracts/{id}/sign-request:
+    post:
+      summary: Generate a signing link
+  /api/clausemind:
+    post:
+      summary: Process a clause action
