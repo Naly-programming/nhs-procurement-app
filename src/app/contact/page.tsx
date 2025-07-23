@@ -68,7 +68,7 @@ export default function ContactPage() {
         </div>
       )}
 
-      {/* Calendly Embed (optional) */}
+      {/* Calendly Embed (optional) 
       <div>
         <h2 className="text-xl font-semibold mb-4">Book a Demo Call</h2>
         <iframe
@@ -76,7 +76,7 @@ export default function ContactPage() {
           className="w-full h-[600px] border rounded"
           frameBorder="0"
         />
-      </div>
+      </div>*/}
     </section>
   )
 }

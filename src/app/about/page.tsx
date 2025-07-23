@@ -18,12 +18,12 @@ export default function AboutPage() {
             {
               name: "Connaire",
               role: "Co-Founder & CEO",
-              image: "/connaire.jpeg"
+              image: "/Connaire.jpeg"
             },
             {
               name: "Lydia",
               role: "CTO",
-              image: "/lydia.jpeg"
+              image: "/Lydia.jpeg"
             },
             {
               name: "",
@@ -48,7 +48,7 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* Timeline Section */}
+      {/* Timeline Section 
       <div>
         <h2 className="text-2xl font-semibold text-gray-800 mb-6">Our Journey</h2>
         <ul className="border-l border-gray-300 pl-6 space-y-4">
@@ -65,7 +65,7 @@ export default function AboutPage() {
             Launched publicly with NHS pilot and early adopters.
           </li>
         </ul>
-      </div>
+      </div>*/}
 
       {/* Partners Section 
       <div>
