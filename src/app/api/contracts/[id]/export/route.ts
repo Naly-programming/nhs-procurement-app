@@ -9,13 +9,13 @@ import type { NextRequest } from 'next/server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   const ip = request.headers.get('x-forwarded-for') || 'global'
   if (!globalLimiter.check(ip)) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
-  const { id } = params
+  const { id } = context.params
   const { data, error } = await supabaseAdmin.from('user_documents').select('*').eq('id', id).maybeSingle()
   if (error || !data) {
     return NextResponse.json({ error: error?.message || 'Not found' }, { status: 404 })
