@@ -38,6 +38,12 @@ export default function TendersList() {
   const [suggestedTenders, setSuggestedTenders] = useState<Tender[]>([])
   const [userIndustry, setUserIndustry] = useState('')
 
+  // Fetch the user's industry when the user object becomes available
+  useEffect(() => {
+    fetchUserIndustry()
+  }, [user])
+
+  // Fetch tenders whenever filters or the user's industry change
   useEffect(() => {
     const fetchTenders = async () => {
       try {
