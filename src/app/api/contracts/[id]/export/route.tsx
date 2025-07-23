@@ -6,7 +6,6 @@ import { globalLimiter } from '@/lib/rateLimit'
 import { track } from '@/lib/analytics'
 
 import type { NextRequest } from 'next/server'
-import { URL } from 'url'
 
 export async function GET(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for') || 'global'
@@ -14,9 +13,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
 
+  // Extract id from URL
   const url = new URL(request.url)
-  const segments = url.pathname.split('/')
-  const id = segments[segments.length - 2] // because the last is "export", one before is [id]
+  const parts = url.pathname.split('/')
+  const id = parts[parts.length - 2] // works for /api/contracts/[id]/export
 
   const { data, error } = await supabaseAdmin
     .from('user_documents')
