@@ -6,7 +6,7 @@ import { track } from '@/lib/analytics'
 function extractIdFromRequest(request: NextRequest) {
   const url = new URL(request.url)
   const parts = url.pathname.split('/')
-  return parts[parts.length - 1] // This assumes route is /api/contracts/[id]
+  return parts[parts.length - 1]
 }
 
 export async function GET(request: NextRequest) {
@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
   }
 
   const id = extractIdFromRequest(request)
+
   const { data, error } = await supabaseAdmin
     .from('user_documents')
     .select('*')
@@ -59,10 +60,12 @@ export async function DELETE(request: NextRequest) {
 
   const id = extractIdFromRequest(request)
   const { error } = await supabaseAdmin.from('user_documents').delete().eq('id', id)
+
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
   track('contract_deleted', { id })
+
   return NextResponse.json({ success: true })
 }
