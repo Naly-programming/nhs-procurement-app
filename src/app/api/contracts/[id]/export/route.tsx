@@ -6,17 +6,24 @@ import { globalLimiter } from '@/lib/rateLimit'
 import { track } from '@/lib/analytics'
 
 import type { NextRequest } from 'next/server'
+import { URL } from 'url'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for') || 'global'
   if (!globalLimiter.check(ip)) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
-  const { id } = params
-  const { data, error } = await supabaseAdmin.from('user_documents').select('*').eq('id', id).maybeSingle()
+
+  const url = new URL(request.url)
+  const segments = url.pathname.split('/')
+  const id = segments[segments.length - 2] // because the last is "export", one before is [id]
+
+  const { data, error } = await supabaseAdmin
+    .from('user_documents')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle()
+
   if (error || !data) {
     return NextResponse.json({ error: error?.message || 'Not found' }, { status: 404 })
   }
@@ -24,7 +31,9 @@ export async function GET(
   const clauses = (data.content ? JSON.parse(data.content) : []) as { text: string }[]
   const doc = <ContractPDF title={data.title} clauses={clauses} />
   const blob = await pdf(doc).toBuffer()
+
   track('contract_exported', { id })
+
   return new NextResponse(blob as unknown as BodyInit, {
     status: 200,
     headers: { 'Content-Type': 'application/pdf' },
