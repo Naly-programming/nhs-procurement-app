@@ -14,11 +14,35 @@ export default function AboutPage() {
       <div>
         <h2 className="text-2xl font-semibold text-gray-800 mb-6">Meet the Team</h2>
         <div className="grid gap-6 md:grid-cols-3">
-          {[1, 2, 3].map((i) => (
+          {[
+            {
+              name: "Connaire",
+              role: "Co-Founder & CEO",
+              image: "/connaire.jpeg"
+            },
+            {
+              name: "Lydia",
+              role: "CTO",
+              image: "/lydia.jpeg"
+            },
+            {
+              name: "",
+              role: "",
+              image: ""
+            }
+          ].map((member, i) => (
             <div key={i} className="p-4 border rounded-lg bg-white shadow-sm text-center">
-              <div className="h-24 w-24 mx-auto mb-4 rounded-full bg-gray-200" />
-              <h3 className="text-lg font-bold">Name Placeholder</h3>
-              <p className="text-sm text-gray-600">Role Placeholder</p>
+              <div className="h-24 w-24 mx-auto mb-4 rounded-full bg-gray-200 overflow-hidden">
+                {member.image && (
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+              <h3 className="text-lg font-bold">{member.name}</h3>
+              <p className="text-sm text-gray-600">{member.role}</p>
             </div>
           ))}
         </div>
@@ -43,7 +67,7 @@ export default function AboutPage() {
         </ul>
       </div>
 
-      {/* Partners Section */}
+      {/* Partners Section 
       <div>
         <h2 className="text-2xl font-semibold text-gray-800 mb-6">Our Partners</h2>
         <div className="flex gap-6 flex-wrap">
@@ -56,7 +80,7 @@ export default function AboutPage() {
             </div>
           ))}
         </div>
-      </div>
+      </div>*/}
     </section>
   )
 }
