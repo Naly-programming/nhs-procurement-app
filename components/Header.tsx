@@ -33,7 +33,7 @@ export default function Header() {
             <div className="hidden md:flex space-x-6">
               <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">Dashboard</Link>
               <Link href="/about" className="text-gray-600 hover:text-gray-900">About</Link>
-              <Link href="/pricing" className="text-gray-600 hover:text-gray-900">Pricing</Link>
+              {/* <Link href="/pricing" className="text-gray-600 hover:text-gray-900">Pricing</Link> */}
               <Link href="/contact" className="text-gray-600 hover:text-gray-900">Contact</Link>
             </div>
           </div>
@@ -95,9 +95,9 @@ export default function Header() {
                 <Link href="/about" className="block py-2 px-4 text-gray-700 hover:bg-gray-100 rounded">
                   About
                 </Link>
-                <Link href="/pricing" className="block py-2 px-4 text-gray-700 hover:bg-gray-100 rounded">
+                {/* <Link href="/pricing" className="block py-2 px-4 text-gray-700 hover:bg-gray-100 rounded">
                   Pricing
-                </Link>
+                </Link> */}
                 <Link href="/contact" className="block py-2 px-4 text-gray-700 hover:bg-gray-100 rounded">
                   Contact
                 </Link>
