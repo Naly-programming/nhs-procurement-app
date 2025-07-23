@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { pdf } from '@react-pdf/renderer'
+import React from 'react'
 import ContractPDF from '@/components/pdf/ContractPDF'
 import { globalLimiter } from '@/lib/rateLimit'
 import { track } from '@/lib/analytics'
@@ -22,7 +23,10 @@ export async function GET(
   }
 
   const clauses = (data.content ? JSON.parse(data.content) : []) as { text: string }[]
-  const doc = <ContractPDF title={data.title} clauses={clauses} />
+  const doc = React.createElement(ContractPDF, {
+    title: data.title,
+    clauses,
+  })
   const blob = await pdf(doc).toBuffer()
   track('contract_exported', { id })
   return new NextResponse(blob as unknown as BodyInit, {
