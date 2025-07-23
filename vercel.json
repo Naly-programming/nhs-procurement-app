@@ -2,9 +2,9 @@
   "version": 2,
   "public": true,
   "github": {
-    "enabled": true,
+    "silent": true,
     "autoAlias": false,
-    "silent": true
+    "branchFilter": "main:production"
   },
   "builds": [
     {
@@ -12,16 +12,6 @@
       "use": "@vercel/next"
     }
   ],
-  "routes": [],
   "regions": ["lhr1"],
-  "build": {
-    "env": {
-      "NEXT_PUBLIC_VERCEL_ENV": "production"
-    }
-  },
-  "deployments": {
-    "production": {
-      "branch": "main"
-    }
-  }
+  "cleanSlate": true
 }
