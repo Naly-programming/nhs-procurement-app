@@ -5,14 +5,6 @@ import { supabase } from '@/lib/supabaseClient'
 import Link from 'next/link'
 import { useUser } from '@/lib/UserContext'
 
-const TABS = [
-  { id: 'all', name: 'All', dbValue: 'all' },
-  { id: 'contractsFinder', name: 'Contracts Finder', dbValue: 'contractsfinder' },
-  { id: 'findTender', name: 'Find Tender', dbValue: 'findtender' },
-  { id: 'publicContractsScotland', name: 'Public Contracts Scotland', dbValue: 'pcs' },
-  { id: 'sell2wales', name: 'Sell2Wales', dbValue: 'sell2wales' },
-]
-
 type Tender = {
   id: string
   title: string
@@ -31,36 +23,44 @@ export default function TendersList() {
   const [loading, setLoading] = useState(true)
   const { user } = useUser()
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 50
+  const [itemsPerPage] = useState(50) // Increased from 10 to 50
   const [totalItems, setTotalItems] = useState(0)
-  const tabs = TABS
+  const tabs = [
+    { id: 'all', name: 'All', dbValue: 'all' },
+    { id: 'contractsFinder', name: 'Contracts Finder', dbValue: 'contractsfinder' },
+    { id: 'findTender', name: 'Find Tender', dbValue: 'findtender' },
+    { id: 'publicContractsScotland', name: 'Public Contracts Scotland', dbValue: 'pcs' },
+    { id: 'sell2wales', name: 'Sell2Wales', dbValue: 'sell2wales' },
+  ]
   const [activeTab, setActiveTab] = useState('all')
   const [suggestedTenders, setSuggestedTenders] = useState<Tender[]>([])
   const [userIndustry, setUserIndustry] = useState('')
 
-  const fetchUserIndustry = async () => {
-    if (!user?.id) return
-    const { data } = await supabase
-      .from('profiles')
-      .select('industry')
-      .eq('id', user.id)
-      .single()
-    if (data?.industry) {
-      setUserIndustry(data.industry)
-    }
-  }
-
+  // Fetch the user's industry when the user object becomes available
   useEffect(() => {
+    const fetchUserIndustry = async () => {
+      if (!user?.id) return
+      const { data } = await supabase
+        .from('profiles')
+        .select('industry')
+        .eq('id', user.id)
+        .single()
+      if (data?.industry) {
+        setUserIndustry(data.industry)
+      }
+    }
+
     fetchUserIndustry()
   }, [user])
 
+  // Fetch tenders whenever filters or the user's industry change
   useEffect(() => {
     const fetchTenders = async () => {
       try {
         setLoading(true)
         let query = supabase.from('tenders').select('*', { count: 'exact' })
-
-        // Pagination
+        
+        // Apply pagination
         const from = (currentPage - 1) * itemsPerPage
         const to = from + itemsPerPage - 1
         query = query.range(from, to)
@@ -72,36 +72,35 @@ export default function TendersList() {
           }
         }
 
-        // Suggested tenders
+        // Temporary test data
+        const testTenders = [{
+          id: 'test-tender-1',
+          title: 'Test Tender Matching Your Industry',
+          description: 'This tender matches your selected industry',
+          published_date: new Date().toISOString(),
+          closing_date: new Date(Date.now() + 86400000).toISOString(),
+          value_min: '100000',
+          value_max: '100000',
+          source: 'test',
+          industry: [userIndustry || 'construction', 'technology']
+        }]
+        
         if (userIndustry) {
           const { data: suggestedData, error } = await supabase
             .from('tenders')
             .select('*')
             .contains('industry', [userIndustry])
             .limit(5)
-
+            
           if (error) {
             console.error('Error fetching suggested tenders:', error)
           }
-
-          const testTenders: Tender[] = [{
-            id: 'test-tender-1',
-            title: 'Test Tender Matching Your Industry',
-            description: 'This tender matches your selected industry',
-            published_date: new Date().toISOString(),
-            closing_date: new Date(Date.now() + 86400000).toISOString(),
-            value_min: '100000',
-            value_max: '100000',
-            source: 'test',
-            industry: [userIndustry || 'construction', 'technology']
-          }]
-
-          setSuggestedTenders([...(suggestedData || []), ...testTenders])
+          setSuggestedTenders([...suggestedData || [], ...testTenders])
         }
 
         const { data, error, count } = await query.order('published_date', { ascending: false })
-        if (error) throw error
 
+        if (error) throw error
         setTenders(data || [])
         setTotalItems(count || 0)
       } catch (error) {
@@ -111,13 +110,11 @@ export default function TendersList() {
       }
     }
 
-    if (user?.id) fetchTenders()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab, user, currentPage, userIndustry])
+    fetchTenders()
+  }, [activeTab, user, userIndustry, currentPage])
 
   return (
     <div className="mt-8">
-      {/* Tabs */}
       <div className="flex border-b border-gray-200">
         {tabs.map((tab) => (
           <button
@@ -130,7 +127,6 @@ export default function TendersList() {
         ))}
       </div>
 
-      {/* Tender List */}
       {loading ? (
         <p className="mt-4">Loading tenders...</p>
       ) : (
@@ -166,7 +162,6 @@ export default function TendersList() {
         </div>
       )}
 
-      {/* Pagination */}
       {totalItems > itemsPerPage && (
         <div className="flex justify-center mt-8">
           <div className="flex space-x-2">
@@ -177,7 +172,7 @@ export default function TendersList() {
             >
               Previous
             </button>
-
+            
             {currentPage > 3 && (
               <button
                 onClick={() => setCurrentPage(1)}
@@ -186,9 +181,9 @@ export default function TendersList() {
                 1
               </button>
             )}
-
+            
             {currentPage > 4 && <span className="px-2 py-2">...</span>}
-
+            
             {Array.from({ length: Math.min(5, Math.ceil(totalItems / itemsPerPage)) }, (_, i) => {
               let pageNum
               if (currentPage <= 3) {
@@ -198,7 +193,7 @@ export default function TendersList() {
               } else {
                 pageNum = currentPage - 2 + i
               }
-
+              
               if (pageNum > 0 && pageNum <= Math.ceil(totalItems / itemsPerPage)) {
                 return (
                   <button
@@ -212,11 +207,11 @@ export default function TendersList() {
               }
               return null
             })}
-
+            
             {currentPage < Math.ceil(totalItems / itemsPerPage) - 3 && (
               <span className="px-2 py-2">...</span>
             )}
-
+            
             {currentPage < Math.ceil(totalItems / itemsPerPage) - 2 && (
               <button
                 onClick={() => setCurrentPage(Math.ceil(totalItems / itemsPerPage))}
@@ -225,7 +220,7 @@ export default function TendersList() {
                 {Math.ceil(totalItems / itemsPerPage)}
               </button>
             )}
-
+            
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(totalItems / itemsPerPage)))}
               disabled={currentPage === Math.ceil(totalItems / itemsPerPage)}
@@ -237,7 +232,6 @@ export default function TendersList() {
         </div>
       )}
 
-      {/* Suggested tenders */}
       {suggestedTenders.length > 0 && (
         <div className="mb-8">
           <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-t-lg">
