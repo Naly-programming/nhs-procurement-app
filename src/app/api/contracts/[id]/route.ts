@@ -3,12 +3,19 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { globalLimiter } from '@/lib/rateLimit'
 import { track } from '@/lib/analytics'
 
-export async function GET(_request: NextRequest, { params }: { params: { id: string } }) {
-  const ip = _request.headers.get('x-forwarded-for') || 'global'
+function extractIdFromRequest(request: NextRequest) {
+  const url = new URL(request.url)
+  const parts = url.pathname.split('/')
+  return parts[parts.length - 1] // This assumes route is /api/contracts/[id]
+}
+
+export async function GET(request: NextRequest) {
+  const ip = request.headers.get('x-forwarded-for') || 'global'
   if (!globalLimiter.check(ip)) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
-  const { id } = params
+
+  const id = extractIdFromRequest(request)
   const { data, error } = await supabaseAdmin
     .from('user_documents')
     .select('*')
@@ -22,12 +29,13 @@ export async function GET(_request: NextRequest, { params }: { params: { id: str
   return NextResponse.json(data)
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for') || 'global'
   if (!globalLimiter.check(ip)) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
-  const { id } = params
+
+  const id = extractIdFromRequest(request)
   const { title, content } = await request.json()
   const { error } = await supabaseAdmin
     .from('user_documents')
@@ -43,16 +51,18 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   return NextResponse.json({ success: true })
 }
 
-export async function DELETE(_request: NextRequest, { params }: { params: { id: string } }) {
-  const ip = _request.headers.get('x-forwarded-for') || 'global'
+export async function DELETE(request: NextRequest) {
+  const ip = request.headers.get('x-forwarded-for') || 'global'
   if (!globalLimiter.check(ip)) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
-  const { id } = params
+
+  const id = extractIdFromRequest(request)
   const { error } = await supabaseAdmin.from('user_documents').delete().eq('id', id)
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
+
   track('contract_deleted', { id })
   return NextResponse.json({ success: true })
 }
