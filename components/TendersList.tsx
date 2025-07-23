@@ -38,19 +38,29 @@ export default function TendersList() {
   const [suggestedTenders, setSuggestedTenders] = useState<Tender[]>([])
   const [userIndustry, setUserIndustry] = useState('')
 
-  // Fetch the user's industry when the user object becomes available
+  const fetchUserIndustry = async () => {
+    if (!user?.id) return
+    const { data } = await supabase
+      .from('profiles')
+      .select('industry')
+      .eq('id', user.id)
+      .single()
+    if (data?.industry) {
+      setUserIndustry(data.industry)
+    }
+  }
+
   useEffect(() => {
     fetchUserIndustry()
   }, [user])
 
-  // Fetch tenders whenever filters or the user's industry change
   useEffect(() => {
     const fetchTenders = async () => {
       try {
         setLoading(true)
         let query = supabase.from('tenders').select('*', { count: 'exact' })
-        
-        // Apply pagination
+
+        // Pagination
         const from = (currentPage - 1) * itemsPerPage
         const to = from + itemsPerPage - 1
         query = query.range(from, to)
@@ -62,35 +72,36 @@ export default function TendersList() {
           }
         }
 
-        // Temporary test data
-        const testTenders = [{
-          id: 'test-tender-1',
-          title: 'Test Tender Matching Your Industry',
-          description: 'This tender matches your selected industry',
-          published_date: new Date().toISOString(),
-          closing_date: new Date(Date.now() + 86400000).toISOString(),
-          value_min: '100000',
-          value_max: '100000',
-          source: 'test',
-          industry: [userIndustry || 'construction', 'technology']
-        }]
-        
+        // Suggested tenders
         if (userIndustry) {
           const { data: suggestedData, error } = await supabase
             .from('tenders')
             .select('*')
             .contains('industry', [userIndustry])
             .limit(5)
-            
+
           if (error) {
             console.error('Error fetching suggested tenders:', error)
           }
-          setSuggestedTenders([...suggestedData || [], ...testTenders])
+
+          const testTenders: Tender[] = [{
+            id: 'test-tender-1',
+            title: 'Test Tender Matching Your Industry',
+            description: 'This tender matches your selected industry',
+            published_date: new Date().toISOString(),
+            closing_date: new Date(Date.now() + 86400000).toISOString(),
+            value_min: '100000',
+            value_max: '100000',
+            source: 'test',
+            industry: [userIndustry || 'construction', 'technology']
+          }]
+
+          setSuggestedTenders([...(suggestedData || []), ...testTenders])
         }
 
         const { data, error, count } = await query.order('published_date', { ascending: false })
-
         if (error) throw error
+
         setTenders(data || [])
         setTotalItems(count || 0)
       } catch (error) {
@@ -100,27 +111,13 @@ export default function TendersList() {
       }
     }
 
-    const fetchData = async () => {
-      if (!user?.id) return
-      if (!userIndustry) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('industry')
-          .eq('id', user.id)
-          .single()
-        if (data?.industry) {
-          setUserIndustry(data.industry)
-        }
-      }
-      await fetchTenders()
-    }
-
-    fetchData()
+    if (user?.id) fetchTenders()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, user, currentPage, userIndustry])
 
   return (
     <div className="mt-8">
+      {/* Tabs */}
       <div className="flex border-b border-gray-200">
         {tabs.map((tab) => (
           <button
@@ -133,6 +130,7 @@ export default function TendersList() {
         ))}
       </div>
 
+      {/* Tender List */}
       {loading ? (
         <p className="mt-4">Loading tenders...</p>
       ) : (
@@ -168,6 +166,7 @@ export default function TendersList() {
         </div>
       )}
 
+      {/* Pagination */}
       {totalItems > itemsPerPage && (
         <div className="flex justify-center mt-8">
           <div className="flex space-x-2">
@@ -178,7 +177,7 @@ export default function TendersList() {
             >
               Previous
             </button>
-            
+
             {currentPage > 3 && (
               <button
                 onClick={() => setCurrentPage(1)}
@@ -187,9 +186,9 @@ export default function TendersList() {
                 1
               </button>
             )}
-            
+
             {currentPage > 4 && <span className="px-2 py-2">...</span>}
-            
+
             {Array.from({ length: Math.min(5, Math.ceil(totalItems / itemsPerPage)) }, (_, i) => {
               let pageNum
               if (currentPage <= 3) {
@@ -199,7 +198,7 @@ export default function TendersList() {
               } else {
                 pageNum = currentPage - 2 + i
               }
-              
+
               if (pageNum > 0 && pageNum <= Math.ceil(totalItems / itemsPerPage)) {
                 return (
                   <button
@@ -213,11 +212,11 @@ export default function TendersList() {
               }
               return null
             })}
-            
+
             {currentPage < Math.ceil(totalItems / itemsPerPage) - 3 && (
               <span className="px-2 py-2">...</span>
             )}
-            
+
             {currentPage < Math.ceil(totalItems / itemsPerPage) - 2 && (
               <button
                 onClick={() => setCurrentPage(Math.ceil(totalItems / itemsPerPage))}
@@ -226,7 +225,7 @@ export default function TendersList() {
                 {Math.ceil(totalItems / itemsPerPage)}
               </button>
             )}
-            
+
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(totalItems / itemsPerPage)))}
               disabled={currentPage === Math.ceil(totalItems / itemsPerPage)}
@@ -238,6 +237,7 @@ export default function TendersList() {
         </div>
       )}
 
+      {/* Suggested tenders */}
       {suggestedTenders.length > 0 && (
         <div className="mb-8">
           <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-t-lg">
