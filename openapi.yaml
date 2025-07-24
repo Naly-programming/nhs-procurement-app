@@ -82,4 +82,28 @@ paths:
       summary: Generate a signing link
   /api/clausemind:
     post:
-      summary: Process a clause action
+      summary: Process a clause action or chat message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                action:
+                  type: string
+                  description: optional built-in action
+                messages:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      role:
+                        type: string
+                      text:
+                        type: string
+      responses:
+        '200':
+          description: AI response text

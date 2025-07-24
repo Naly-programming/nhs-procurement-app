@@ -4,7 +4,7 @@ This project is a Next.js application that helps suppliers prepare procurement d
 
 ## Setup
 
-1. Copy `.env.local` from the example below and fill in your environment variables.
+1. Copy `.env.example` to `.env.local` and fill in your environment variables.
 2. Install dependencies with `npm install`.
 3. Start the development server using `npm run dev`.
 
@@ -32,6 +32,13 @@ This project is a Next.js application that helps suppliers prepare procurement d
 - PDF export and e‑signature capture with shareable links.
 - Basic rate limiting and analytics tracking.
 - Billing route that creates Stripe checkout sessions.
+
+### ClauseMind v2
+
+ClauseMind now includes a collapsible AI assistant sidebar. It keeps the chat
+history during a session so you can iterate on a clause just like ChatGPT. You
+can also type your own questions in the chat panel. The
+editor uses Tiptap for a Word‑style experience.
 
 API endpoints are documented in `openapi.yaml`.
 

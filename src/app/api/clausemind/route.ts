@@ -7,8 +7,8 @@ export async function POST(request: NextRequest) {
   if (!globalLimiter.check(ip)) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
-  const { action, text } = await request.json()
-  if (!action || !text) {
+  const { action, text, messages } = await request.json()
+  if (!text) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
   }
 
@@ -18,10 +18,20 @@ export async function POST(request: NextRequest) {
     simplify: `Simplify this clause:\n\n${text}`
   }
 
+  const userPrompt = prompts[action] ?? text
+
   const apiKey = process.env.OPENAI_API_KEY
   if (!apiKey) {
     return NextResponse.json({ error: 'Missing API key' }, { status: 500 })
   }
+
+  const history = Array.isArray(messages)
+    ? messages.map((m: { role: string; text: string }) => ({
+        role: m.role === 'ai' ? 'assistant' : 'user',
+        content: m.text,
+      }))
+    : []
+  history.push({ role: 'user', content: userPrompt })
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -31,7 +41,7 @@ export async function POST(request: NextRequest) {
     },
     body: JSON.stringify({
       model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: prompts[action] }],
+      messages: history,
       temperature: 0.7
     })
   })
