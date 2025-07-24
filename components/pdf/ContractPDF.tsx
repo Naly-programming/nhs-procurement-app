@@ -1,4 +1,4 @@
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer'
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer'
 import { load } from 'cheerio'
 
 interface Clause {
@@ -10,10 +10,13 @@ const styles = StyleSheet.create({
   clause: { marginBottom: 10 },
 })
 
-export default function ContractPDF({ title, clauses }: { title: string; clauses: Clause[] }) {
+export default function ContractPDF({ title, clauses, logoUrl }: { title: string; clauses: Clause[]; logoUrl?: string }) {
   return (
     <Document>
       <Page style={styles.page}>
+        {logoUrl && (
+          <Image src={logoUrl} style={{ width: 100, marginBottom: 20 }} />
+        )}
         <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 20 }}>{title}</Text>
         {clauses.map((c, i) => {
           const $ = load(c.text)

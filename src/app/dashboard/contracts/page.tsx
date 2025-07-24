@@ -61,6 +61,12 @@ export default function ContractsPage() {
       >
         New Document
       </button>
+      <Link
+        href="/dashboard/templates"
+        className="underline text-primary text-sm"
+      >
+        Start from template
+      </Link>
       <ul className="divide-y">
         {docs.map(doc => (
           <li key={doc.id} className="py-2 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">

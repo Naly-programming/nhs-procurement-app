@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.url)
   const parts = url.pathname.split('/')
   const id = parts[parts.length - 2] // works for /api/contracts/[id]/export
+  const logo = url.searchParams.get('logo') || undefined
 
   const { data, error } = await supabaseAdmin
     .from('user_documents')
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
   }
 
   const clauses = (data.content ? JSON.parse(data.content) : []) as { text: string }[]
-  const doc = <ContractPDF title={data.title} clauses={clauses} />
+  const doc = <ContractPDF title={data.title} clauses={clauses} logoUrl={logo} />
   const blob = await pdf(doc).toBuffer()
 
   track('contract_exported', { id })
